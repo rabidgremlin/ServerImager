@@ -1,0 +1,105 @@
+<project name="ServerImager" default="release" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+ 
+  <!-- set global properties for this build -->
+  <property name="src.dir" location="../src"/>
+  <property name="java.dir" location="${src.dir}"/>
+  <property name="tmp.dir" location="../tmp"/>
+  <property name="class.dir"  location="../bin"/>
+  <property name="release.dir"  location="../release"/>
+  <property name="lib.dir"  location="../lib"/>
+  
+  
+  <path id="onejar.lib.path">
+    <fileset dir="onejar/dist" includes="*.jar"/>
+  </path>  
+  <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask"  classpathref="onejar.lib.path" onerror="report"/>
+  
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->   
+	<mkdir dir="${class.dir}"/>
+	<mkdir dir="${release.dir}"/>	
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+		
+    <javac srcdir="${java.dir}" destdir="${class.dir}" target="1.6" source="1.6">
+	  <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+	  </classpath>
+	</javac>
+  </target>
+
+  <target name="release" depends="clean,sync-lib,compile"
+        description="generate the distribution" >
+
+  	<one-jar destfile="${release.dir}\serverimager.jar">
+        <manifest>
+            <attribute name="One-Jar-Main-Class" value="com.rabidgremlin.serverimager.ServerImager"/>                
+        </manifest>
+        <main>
+            <fileset dir="${class.dir}"/>
+	        <fileset dir="${java.dir}">
+	            <include name="*.xml"/>
+	        </fileset>
+        </main>
+        <lib>
+            <fileset dir="${lib.dir}">
+			    <include name="**/*.jar"/>			
+		    </fileset>
+        </lib>
+    </one-jar>  	
+  </target>
+
+  <target name="clean"
+        description="clean up" >    
+    <delete dir="${class.dir}"/>
+	<delete dir="${release.dir}"/>
+    <delete dir="${lib.dir}"/> 	
+  </target>
+  
+  
+  
+  <target name="sync-lib" depends="initmvn">
+    <delete dir="${lib.dir}" />
+    <mkdir dir="${lib.dir}" />
+    <artifact:dependencies filesetId="jclouds.fileset" versionsId="dependency.versions">
+      <dependency groupId="org.jclouds.provider" artifactId="rackspace-cloudservers-us" version="1.5.9" />
+      <dependency groupId="org.jclouds.driver" artifactId="jclouds-sshj" version="1.5.9" />
+      <dependency groupId="ch.qos.logback" artifactId="logback-classic" version="[1.0.0,)" />
+    </artifact:dependencies>
+	<artifact:dependencies filesetId="jcommander.fileset" versionsId="dependency.versions">
+	  <dependency groupId="com.beust" artifactId="jcommander" version="1.30"/>      
+	</artifact:dependencies>  
+	<artifact:dependencies filesetId="slf4j.fileset" versionsId="dependency.versions">
+	  <dependency groupId="org.slf4j" artifactId="jul-to-slf4j" version="1.7.4"/>      
+	</artifact:dependencies>
+    <copy todir="${lib.dir}" verbose="true">
+      <fileset refid="jclouds.fileset"/>
+      <mapper type="flatten" />
+    </copy>
+	<copy todir="${lib.dir}" verbose="true">
+      <fileset refid="jcommander.fileset"/>
+      <mapper type="flatten" />
+    </copy>
+	<copy todir="${lib.dir}" verbose="true">
+      <fileset refid="slf4j.fileset"/>
+      <mapper type="flatten" />
+    </copy>
+  </target>
+  
+  <!-- get src="http://search.maven.org/remotecontent?filepath=org/apache/maven/maven-ant-tasks/2.1.3/maven-ant-tasks-2.1.3.jar" dest="maven-ant-tasks.jar"/ -->
+  
+  <target name="initmvn">
+    <path id="maven-ant-tasks.classpath" path="maven-ant-tasks.jar"/>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+             uri="urn:maven-artifact-ant"
+             classpathref="maven-ant-tasks.classpath"/>
+  </target>
+  
+</project>

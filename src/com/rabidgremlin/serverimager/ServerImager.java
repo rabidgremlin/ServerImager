@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -37,6 +38,11 @@ public class ServerImager
 
   public static void main(String[] args)
   {
+    // Bridge JUL to SLF4J
+    SLF4JBridgeHandler.removeHandlersForRootLogger();
+    SLF4JBridgeHandler.install();
+
+    log.info("Starting ServerImager...");
 
     MainOptions options = new MainOptions();
     JCommander jc = new JCommander(options);

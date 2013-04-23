@@ -1,8 +1,12 @@
 <?xml version="1.0"?>
 <configuration scan="false">
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+      <resetJUL>true</resetJUL>
+    </contextListener>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <Pattern>%d %-5p [%c] [%thread] %m%n</Pattern>
+            <!-- <Pattern>%d %-5p [%c] [%thread] %m%n</Pattern> -->
+            <Pattern>%d %-5p %m%n</Pattern>
         </encoder>
     </appender>
     
@@ -10,5 +14,10 @@
         <level value="INFO" />
         <appender-ref ref="STDOUT" />
     </root>
+
+    <!-- supress some guice warnings that show up when we pack app with onejar -->
+    <logger name="com.google.inject.internal.util">
+        <level value="ERROR" />        
+    </logger>    
 
 </configuration>

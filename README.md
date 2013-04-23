@@ -31,5 +31,13 @@ This tool creates rolling server images for Rackspace Cloud servers.
 		   The Rackspace zone.
 		   Default: DFW
 		   
+## Building
+
+1. check out source
+2. ```cd build```
+3. ```ant release```
+
+*serverimager.jar* will be created in ```..\release``` folder		   
+		   
 ## Thanks
 This tool was created with the support of [ClearPoint New Zealand](http://www.clearpoint.co.nz). Thanks !		   
