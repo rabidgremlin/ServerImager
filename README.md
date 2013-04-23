@@ -1,4 +1,4 @@
-# Server Imager
+# Rackspace Cloud Server Imager
 This tool creates rolling server images for Rackspace Cloud servers.
 
 ## Usage
@@ -30,6 +30,41 @@ This tool creates rolling server images for Rackspace Cloud servers.
 		-zone
 		   The Rackspace zone.
 		   Default: DFW
+
+## Examples
+If you have servers *zeus*, *apollo* and *mars* the following command run every 24hrs (via cron for instance) will create rolling daily images:
+
+	java -jar serverimager.jar -user myuserid -key xxxxxxxyyyyyyyzzzzz -maxage 1 -nuke -prefix daily zeus apollo mars
+	
+If you run the the following command every 7 days, you will create a rolling weekly image:
+
+	java -jar serverimager.jar -user myuserid -key xxxxxxxyyyyyyyzzzzz -maxage 1 -nuke -prefix weekly zeus apollo mars
+		   
+**Note** You can only create one image per server at a time so make sure to schedule the commands above at different times. Also the above commands will land up nuking the current image before the new one is completed created. To avoid this you can:
+
+* Run the command with a smaller window (eg every 23hrs instead of 24 hours for the daily example)
+* Add one to the ```-maxage``` parameter 
+* Run the command create and nuke commands at seperate times e.g. run the tool every 24 hours (without the ```-nuke``` parameter) and then run it again with the ```-nuke``` and ```-nocreate``` params every 25 hours
+
+### @file usage
+You can also supply the options for the tool via a file. For instance
+
+	java -jar serverimager.jar @dailyimages
+	
+where *dailyimages* is file containing:
+
+	-user 
+	myuserid 
+	-key 
+	xxxxxxxyyyyyyyzzzzz 
+	-maxage 
+	1 
+	-nuke 
+	-prefix 
+	daily 
+	zeus 
+	apollo 
+	mars	
 		   
 ## Building
 

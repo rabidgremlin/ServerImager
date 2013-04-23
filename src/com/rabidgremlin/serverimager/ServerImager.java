@@ -126,11 +126,16 @@ public class ServerImager
       // delete old images
       if (options.nukeOldImages)
       {
-        // build up set of server ids
+        // build up set of server ids for the servers specified on cmd line
         HashSet<String> serverIdSet = new HashSet<String>();
-        for (ServerDetails server : servers)
+        for (String server : options.servers)
         {
-          serverIdSet.add(server.getId());
+          ServerDetails serverDetails = serversByNameMap.get(server);
+
+          if (serverDetails != null)
+          {
+            serverIdSet.add(serverDetails.getId());
+          }
         }
 
         log.info("Deleting images older then {} days", options.maxImageAgeInDays);
